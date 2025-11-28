@@ -43,7 +43,8 @@ class EarthModel:
         for layer in self.layers:
             d_min, d_max = layer.thickness
             vs_min, vs_max = layer.velocity_s
-            nu_min, nu_max = layer.poisson
+            #nu_min, nu_max = layer.poisson
+            nu_min, nu_max = layer.vpvsr
             out += [
                 f"{d_min:>10.4f}{d_max:>10.4f}{vs_min:>10.4f}{vs_max:>10.4f}{nu_min:>10.4f}{nu_max:>10.4f}"
             ]
@@ -278,8 +279,10 @@ class EarthModel:
         # Search boundaries
         thickness_bounds = np.array([layer.thickness for layer in self._layers[:-1]])
         velocity_bounds = np.array([layer.velocity_s for layer in self._layers])
-        poisson_bounds = np.array([layer.poisson for layer in self._layers])
-        bounds = np.vstack([thickness_bounds, velocity_bounds, poisson_bounds])
+        #poisson_bounds = np.array([layer.poisson for layer in self._layers])
+        vpvsr_bounds = np.array([layer.vpvsr for layer in self._layers])
+        #bounds = np.vstack([thickness_bounds, velocity_bounds, poisson_bounds])
+        bounds = np.vstack([thickness_bounds, velocity_bounds, vpvsr_bounds])
 
         # Increasing velocity models: penalty term
         if self._configuration["increasing_velocity"]:
@@ -324,10 +327,11 @@ class EarthModel:
                 )
 
                 # Sample Poisson's ratio
-                poissons = np.random.uniform(*poisson_bounds.T, size=(n, self.n_layers))
+                #poissons = np.random.uniform(*poisson_bounds.T, size=(n, self.n_layers))
+                vpvsrs = np.random.uniform(*vpvsr_bounds.T, size=(n, self.n_layers))
 
                 # Concatenate samples
-                x0i = np.column_stack((thicknesses, velocities, poissons))
+                x0i = np.column_stack((thicknesses, velocities, vpvsrs))
                 x0i = x0i.ravel() if method in {"cmaes", "vdcma"} else x0i
 
             else:
@@ -394,8 +398,10 @@ class EarthModel:
         """
         thickness = x[: self.n_layers - 1].copy()
         velocity_s = x[self.n_layers - 1 : 2 * self.n_layers - 1].copy()
-        poisson = x[2 * self.n_layers - 1 :].copy()
-        velocity_p = self._get_velocity_p(velocity_s, poisson)
+        #poisson = x[2 * self.n_layers - 1 :].copy()
+        vpvsr = x[2 * self.n_layers - 1 :].copy()
+        #velocity_p = self._get_velocity_p(velocity_s, poisson)
+        velocity_p = self._get_velocity_p(velocity_s, vpvsr)
         density = self._get_density(velocity_p)
 
         # Handle water layer
@@ -484,10 +490,15 @@ class EarthModel:
         except KeyError:
             raise RuntimeError("model is not configured")
 
+    # @staticmethod
+    # def _get_velocity_p(velocity_s, poisson):
+    #     """Get P-wave velocity."""
+    #     return velocity_s * ((1.0 - poisson) / (0.5 - poisson)) ** 0.5
+
     @staticmethod
-    def _get_velocity_p(velocity_s, poisson):
+    def _get_velocity_p(velocity_s, vpvsr):
         """Get P-wave velocity."""
-        return velocity_s * ((1.0 - poisson) / (0.5 - poisson)) ** 0.5
+        return velocity_s * vpvsr
 
     @property
     def layers(self):

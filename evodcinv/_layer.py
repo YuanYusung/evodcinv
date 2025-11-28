@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Layer:
-    def __init__(self, thickness, velocity_s, poisson=None):
+    def __init__(self, thickness, velocity_s, vpvsr=None):
         """
         Layer class.
 
@@ -21,11 +21,13 @@ class Layer:
             Layer Poisson's ratio search boundary.
 
         """
-        poisson = poisson if poisson is not None else [0.2, 0.4]
+        # poisson = poisson if poisson is not None else [0.2, 0.4]
+        vpvsr =  vpvsr if vpvsr is not None else [1.5, 5.]
         kwargs = {
             "thickness": thickness,
             "velocity_s": velocity_s,
-            "poisson": poisson,
+            #"poisson": poisson,
+            "vpvsr" : vpvsr,
         }
 
         for k, v in kwargs.items():
@@ -63,7 +65,8 @@ class Layer:
 
         d_min, d_max = self.thickness
         vs_min, vs_max = self.velocity_s
-        nu_min, nu_max = self.poisson
+        #nu_min, nu_max = self.poisson
+        nu_min, nu_max = self.vpvsr
         out += [
             f"{d_min:>10.4f}{d_max:>10.4f}{vs_min:>10.4f}{vs_max:>10.4f}{nu_min:>10.4f}{nu_max:>10.4f}"
         ]
@@ -84,7 +87,12 @@ class Layer:
         """Return layer S-wave velocity search boundary."""
         return self._velocity_s
 
+    # @property
+    # def poisson(self):
+    #     """Return layer Poisson's ratio search boundary."""
+    #     return self._poisson
+
     @property
-    def poisson(self):
-        """Return layer Poisson's ratio search boundary."""
-        return self._poisson
+    def vpvsr(self):
+        """Return layer vp to vs ratio search boundary."""
+        return self._vpvsr
