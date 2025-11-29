@@ -22,7 +22,7 @@ class Layer:
 
         """
         # poisson = poisson if poisson is not None else [0.2, 0.4]
-        vpvsr =  vpvsr if vpvsr is not None else [1.5, 5.]
+        vpvsr =  vpvsr if vpvsr is not None else [1.63, 2.45]
         kwargs = {
             "thickness": thickness,
             "velocity_s": velocity_s,
