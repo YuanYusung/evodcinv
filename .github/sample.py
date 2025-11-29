@@ -30,9 +30,10 @@ model = EarthModel()
 # Build model search boundaries from top to bottom
 # First argument is the bounds of layer's thickness [km]
 # Second argument is the bounds of layer's S-wave velocity [km/s]
-# Third argument is the bounds of VP/VS ratio
-model.add(Layer([0.001, 0.1], [0.1, 3.0]), [1.5,7])
-model.add(Layer([0.001, 0.1], [0.1, 3.0]), [1.5,7])
+# Third argument is the bounds of VP/VS ratio, the default setting 
+# is [1.63, 2.45], which corresponds to Poisson's ratio ranging from 0.2 to 0.4.
+model.add(Layer([0.001, 0.1], [0.1, 3.0], [2, 8.])) # Set a wider range of VP/VS ratio to correspond to shallow layers with high water content.
+model.add(Layer([0.001, 0.1], [0.1, 3.0]))
 
 # Constant density (=2 g/cm3)
 # First argument is P-wawe velocity [km/s]
@@ -44,7 +45,7 @@ model.configure(
     misfit="rmse",
     density=density,
     optimizer_args={
-        "popsize": 10,
+        "popsize": 20,
         "maxiter": 100,
         "workers": -1,
         "seed": 0,
@@ -57,7 +58,7 @@ curves = [Curve(cp.period, cp.velocity, 0, "rayleigh", "phase")]
 # Run inversion
 # See stochopy's documentation for optimizer options <https://keurfonluu.github.io/stochopy/>
 res = model.invert(curves)
-res = res.threshold(0.02)
+res = res.threshold(3 * np.min(res.misfit))
 
 # Plot results
 fig, ax = plt.subplots(1, 3, figsize=(15, 6))
