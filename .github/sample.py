@@ -30,8 +30,9 @@ model = EarthModel()
 # Build model search boundaries from top to bottom
 # First argument is the bounds of layer's thickness [km]
 # Second argument is the bounds of layer's S-wave velocity [km/s]
-model.add(Layer([0.001, 0.1], [0.1, 3.0]))
-model.add(Layer([0.001, 0.1], [0.1, 3.0]))
+# Third argument is the bounds of VP/VS ratio
+model.add(Layer([0.001, 0.1], [0.1, 3.0]), [1.5,7])
+model.add(Layer([0.001, 0.1], [0.1, 3.0]), [1.5,7])
 
 # Constant density (=2 g/cm3)
 # First argument is P-wawe velocity [km/s]
