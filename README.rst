@@ -12,7 +12,7 @@ evodcinv
 
    Inversion of phase velocity dispersion curve (fundamental mode).
 
-.. figure:: https://raw.githubusercontent.com/YuanYusung/evodcinv/master/.github/sample4multimode.png
+.. figure:: https://raw.githubusercontent.com/YuanYusung/evodcinv/master/.github/sample4multi-mode.png
    :alt: sample
    :width: 100%
    :align: center
